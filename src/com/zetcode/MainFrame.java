@@ -50,6 +50,7 @@ public class MainFrame extends JFrame implements KeyListener{
         openMypageButton.setBounds(100, 300, 200, 100);
         closeMainButton.setBounds(100, 400, 200, 100);
 
+
         add(openMarketButton);
         add(openMypageButton);
         add(closeMainButton);

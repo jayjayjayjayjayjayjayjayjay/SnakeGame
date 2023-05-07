@@ -14,7 +14,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
-
+import com.zetcode.InGamePannel;
 
 public class Board extends JPanel implements ActionListener {
 
@@ -22,6 +22,7 @@ public class Board extends JPanel implements ActionListener {
     private final int B_HEIGHT = 800;
     private final int DOT_SIZE = 10;
     private final int ALL_DOTS = 900;
+    private InGamePannel timepannel;
 
     //B_WIDTH,B_HEIGHT에 따라 랜덤값 생성
     private final int RAND_POS = (int) Math.ceil((double) Math.min(B_WIDTH, B_HEIGHT - DOT_SIZE) / DOT_SIZE);
@@ -121,6 +122,9 @@ public class Board extends JPanel implements ActionListener {
 
         timer = new Timer(DELAY, this);
         timer.start();
+        timepannel=new InGamePannel();
+        timepannel.setBounds(0,0,150,30);
+        add(timepannel);
     }
 
 
@@ -304,3 +308,4 @@ public class Board extends JPanel implements ActionListener {
         mainFrame.setVisible(true);
     }
 }
+
