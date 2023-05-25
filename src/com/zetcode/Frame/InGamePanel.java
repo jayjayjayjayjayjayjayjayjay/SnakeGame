@@ -10,7 +10,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import javax.swing.JPanel;
 
-public class InGamePannel extends JPanel implements ActionListener {
+public class InGamePanel extends JPanel implements ActionListener {
     private static final long serialVersionUID = 1L;
 
     private long startTime;
@@ -20,7 +20,7 @@ public class InGamePannel extends JPanel implements ActionListener {
     private Color fontColor;
     private int score=0;
 
-    public InGamePannel() {
+    public InGamePanel() {
         startTime = System.currentTimeMillis();
         font = new Font("Arial", Font.BOLD, 12);
         fontColor = Color.YELLOW;
@@ -58,6 +58,10 @@ public class InGamePannel extends JPanel implements ActionListener {
     }
     public void incrementScore() {
         score++;
+        repaint();
+    }
+    public void decrementScore() {
+        score--;
         repaint();
     }
 }
