@@ -9,7 +9,7 @@ import javax.swing.*;
 
 import com.zetcode.Entity.*;
 import com.zetcode.Frame.GameFrame;
-import com.zetcode.Frame.InGamePannel;
+import com.zetcode.Frame.InGamePanel;
 
 public class Board extends JPanel implements ActionListener {
 
@@ -17,7 +17,7 @@ public class Board extends JPanel implements ActionListener {
     private final int B_HEIGHT = 800;
     private final int DOT_SIZE = 10;
     private final int ALL_DOTS = 900;
-    private InGamePannel timepannel;
+    private InGamePanel timePanel;
 
     //B_WIDTH,B_HEIGHT에 따라 랜덤값 생성
     private final int RAND_POS = (int) Math.ceil((double) Math.min(B_WIDTH, B_HEIGHT - DOT_SIZE) / DOT_SIZE);
@@ -28,16 +28,22 @@ public class Board extends JPanel implements ActionListener {
 
     private SnakeEntity snake;
     private AppleEntity appleEntity;
-
+    private BoxEntity boxEntity;
+    private TrapEntity trapEntity;
     private boolean leftDirection = false;
     private boolean rightDirection = true;
     private boolean upDirection = false;
     private boolean downDirection = false;
     private boolean inGame = true;
     private boolean gamePaused = false;
+    private boolean stun = false;
+    private long stun_start_time;
     private final int max_apple = 5; // 최대 생성 가능한 사과 개수
     private int current_apple = 0; // 현재 생성된 사과 개수
-
+    private final int max_box = 5; // 최대 생성 가능한 랜덤박스 개수
+    private int current_box = 0; // 현재 생성된 랜덤박스 개수
+    private final int max_trap = 3; // 최대 생성 가능한 트랩 개수
+    private int current_trap = 0; // 현재 생성된 트랩 개수
     private final int meteorTime = 1; // 원하는 메테오 시간
     private final int meteorSpeed = 5; // 원하는 메테오 시간
 
@@ -63,6 +69,8 @@ public class Board extends JPanel implements ActionListener {
     private Timer timer;
     private Image ball;
     private Image apple;
+    private Image box;
+    private Image trap;
     private Image head;
     private Image obstacle;
     private Image meteor;
@@ -99,9 +107,9 @@ public class Board extends JPanel implements ActionListener {
         setPreferredSize(new Dimension(B_WIDTH, B_HEIGHT));
         loadImages();
         initGame();
-        timepannel = new InGamePannel();
-        timepannel.setBounds(0, 0, 150, 30);
-        add(timepannel);
+        timePanel = new InGamePanel();
+        timePanel.setBounds(0, 0, 150, 30);
+        add(timePanel);
     }
 
     private void loadImages() {
@@ -110,6 +118,12 @@ public class Board extends JPanel implements ActionListener {
 
         ImageIcon iia = new ImageIcon("src/resources/apple.png");
         apple = iia.getImage();
+
+        ImageIcon iib = new ImageIcon("src/resources/box.png");
+        box = iib.getImage();
+
+        ImageIcon iit = new ImageIcon("src/resources/trap.png");
+        trap = iit.getImage();
 
         ImageIcon iih = new ImageIcon("src/resources/head.png");
         head = iih.getImage();
@@ -140,6 +154,11 @@ public class Board extends JPanel implements ActionListener {
         appleEntity = new AppleEntity(RAND_POS, DOT_SIZE);
         appleEntity.locateApple(); // Pass RAND_POS to locateApple method
 
+        boxEntity = new BoxEntity(RAND_POS, DOT_SIZE);
+        boxEntity.locateBox();
+
+        trapEntity = new TrapEntity(RAND_POS, DOT_SIZE);
+        trapEntity.locateTrap();
 
         //장애물 개수 조절
         obstacleEntity = new ObstacleEntity(NUM, DOT_SIZE, RAND_POS); // Pass RAND_POS to ObstacleEntity constructor
@@ -166,6 +185,10 @@ public class Board extends JPanel implements ActionListener {
     private void doDrawing(Graphics g) {
         if (inGame) {
             g.drawImage(apple, appleEntity.getAppleX(), appleEntity.getAppleY(), this);
+            g.drawImage(trap, trapEntity.getTrapX(), trapEntity.getTrapY(), this);
+            if (snake.getDots() % 4 == 0){ // 지렁이 길이가 4의 배수일 때 랜덤박스 생성
+                g.drawImage(box, boxEntity.getBoxX(), boxEntity.getBoxY(), this);
+            }
 
             for (int z = 0; z < snake.getDots(); z++) {
                 if (z == 0) {
@@ -242,11 +265,48 @@ public class Board extends JPanel implements ActionListener {
                 meteorEntity = new MeteorEntity(10);
                 lastMeteorTime = System.currentTimeMillis();
             }
-            timepannel.incrementScore();
+            timePanel.incrementScore();
         }
     }
 
+    private void checkBox() {
+        if ((snake.getX()[0] == boxEntity.getBoxX()) && (snake.getY()[0] == boxEntity.getBoxY())) {
+            //snake.grow();
+            boxOpen();
+            boxEntity.locateBox();
+            current_box++;
 
+            if (current_box == max_box) {
+                locateBox();
+            }
+
+            // 지렁이의 길이가 4의 배수일 때 메테오 생성
+            if (snake.getDots() % 4 == 0) {
+                meteorEntity = new MeteorEntity(10);
+                lastMeteorTime = System.currentTimeMillis();
+            }
+        }
+    }
+    private void checkTrap() {
+        if ((snake.getX()[0] == trapEntity.getTrapX()) && (snake.getY()[0] == trapEntity.getTrapY())) {
+            snake.shrink();
+            stun_start_time = System.currentTimeMillis();
+            stun = true;
+            trapEntity.locateTrap();
+            current_trap++;
+
+            if (current_trap == max_trap) {
+                locateTraps();
+            }
+
+            // 지렁이의 길이가 4의 배수일 때 메테오 생성
+            if (snake.getDots() % 4 == 0) {
+                meteorEntity = new MeteorEntity(10);
+                lastMeteorTime = System.currentTimeMillis();
+            }
+            timePanel.decrementScore();
+        }
+    }
     private void locateApples() {
         int newApples = (int) (Math.random() * (max_apple + 1));
         for (int i = 0; i < newApples; i++) {
@@ -254,10 +314,25 @@ public class Board extends JPanel implements ActionListener {
         }
         current_apple = 0;
     }
-
-
+    private void locateBox() {
+        int newBox = (int) (Math.random() * (max_box + 1));
+        for (int i = 0; i < newBox; i++) {
+            boxEntity.locateBox();
+        }
+        current_box = 0;
+    }
+    private void locateTraps() {
+        int newTraps = (int) (Math.random() * (max_trap + 1));
+        for (int i = 0; i < newTraps; i++) {
+            trapEntity.locateTrap();
+        }
+        current_trap = 0;
+    }
     private void move() {
-        snake.move(DOT_SIZE, leftDirection, rightDirection, upDirection, downDirection);
+
+        if (!stun){
+            snake.move(DOT_SIZE, leftDirection, rightDirection, upDirection, downDirection);
+        }
     }
 
     private void checkCollision() {
@@ -284,7 +359,9 @@ public class Board extends JPanel implements ActionListener {
                     }
                 }
             }
-
+            if (snake.getDots() == 0){
+                inGame = false;
+            }
             if (!inGame) {
                 timer.stop();
             }
@@ -295,11 +372,14 @@ public class Board extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         if (inGame) {
             checkApple();
+            checkBox();
+            checkTrap();
             checkCollision();
             move();
             updateMeteor();
             monsterEntity.updateMonsterAndShootPositions(snake, shootSpeed);
             updateInvincibility();
+            updateStun();
         }
 
         repaint();
@@ -318,6 +398,60 @@ public class Board extends JPanel implements ActionListener {
         if (currentTime - lastMeteorTime > meteorTime) {
             meteorEntity.updatePosition(meteorSpeed); // 원하는 메테오 이동 속도
             lastMeteorTime = currentTime;
+        }
+    }
+    private void updateStun() {
+        if (stun) {
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - stun_start_time > 1000) {
+                stun = false;
+            }
+        }
+    }
+    private void boxOpen() {
+        int option = (int) ((Math.random() * 5) + 1);
+        int option_dots = (int) ((Math.random() * 2) + 1);
+        switch(option){
+            case 1:
+                locateBox();
+                if(option_dots == 1) {
+                    snake.grow();
+                }else {
+                    snake.shrink();
+                }
+                break;
+            case 2:
+                locateApples();
+                if(option_dots == 1) {
+                    snake.grow();
+                }else {
+                    snake.shrink();
+                }
+                break;
+            case 3:
+                locateTraps();
+                if(option_dots == 1) {
+                    snake.grow();
+                }else {
+                    snake.shrink();
+                }
+                break;
+            case 4:
+                incrementScore();
+                if(option_dots == 1) {
+                    snake.grow();
+                }else {
+                    snake.shrink();
+                }
+                break;
+            case 5:
+                decrementScore();
+                if(option_dots == 1) {
+                    snake.grow();
+                }else {
+                    snake.shrink();
+                }
+                break;
         }
     }
 
@@ -375,6 +509,10 @@ public class Board extends JPanel implements ActionListener {
     }
     private void incrementScore() {
         score++;
+        repaint();
+    }
+    private void decrementScore() {
+        score--;
         repaint();
     }
 }

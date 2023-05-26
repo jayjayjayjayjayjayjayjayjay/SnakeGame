@@ -71,6 +71,7 @@ public class SnakeEntity {
     public void grow() {
         dots++;
     }
+    public void shrink() { dots--; }
 
     public int[] getX() {
         return x;
