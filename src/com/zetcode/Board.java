@@ -17,7 +17,7 @@ public class Board extends JPanel implements ActionListener {
     private final int B_HEIGHT = 800;
     private final int DOT_SIZE = 10;
     private final int ALL_DOTS = 900;
-    private InGamePanel timepanel;
+    private InGamePanel timePanel;
 
     //B_WIDTH,B_HEIGHT에 따라 랜덤값 생성
     private final int RAND_POS = (int) Math.ceil((double) Math.min(B_WIDTH, B_HEIGHT - DOT_SIZE) / DOT_SIZE);
@@ -36,6 +36,8 @@ public class Board extends JPanel implements ActionListener {
     private boolean downDirection = false;
     private boolean inGame = true;
     private boolean gamePaused = false;
+    private boolean stun = false;
+    private long stun_start_time;
     private final int max_apple = 5; // 최대 생성 가능한 사과 개수
     private int current_apple = 0; // 현재 생성된 사과 개수
     private final int max_box = 5; // 최대 생성 가능한 랜덤박스 개수
@@ -105,9 +107,9 @@ public class Board extends JPanel implements ActionListener {
         setPreferredSize(new Dimension(B_WIDTH, B_HEIGHT));
         loadImages();
         initGame();
-        timepanel = new InGamePanel();
-        timepanel.setBounds(0, 0, 150, 30);
-        add(timepanel);
+        timePanel = new InGamePanel();
+        timePanel.setBounds(0, 0, 150, 30);
+        add(timePanel);
     }
 
     private void loadImages() {
@@ -263,7 +265,7 @@ public class Board extends JPanel implements ActionListener {
                 meteorEntity = new MeteorEntity(10);
                 lastMeteorTime = System.currentTimeMillis();
             }
-            timepanel.incrementScore();
+            timePanel.incrementScore();
         }
     }
 
@@ -288,6 +290,8 @@ public class Board extends JPanel implements ActionListener {
     private void checkTrap() {
         if ((snake.getX()[0] == trapEntity.getTrapX()) && (snake.getY()[0] == trapEntity.getTrapY())) {
             snake.shrink();
+            stun_start_time = System.currentTimeMillis();
+            stun = true;
             trapEntity.locateTrap();
             current_trap++;
 
@@ -300,7 +304,7 @@ public class Board extends JPanel implements ActionListener {
                 meteorEntity = new MeteorEntity(10);
                 lastMeteorTime = System.currentTimeMillis();
             }
-            timepanel.decrementScore();
+            timePanel.decrementScore();
         }
     }
     private void locateApples() {
@@ -325,7 +329,10 @@ public class Board extends JPanel implements ActionListener {
         current_trap = 0;
     }
     private void move() {
-        snake.move(DOT_SIZE, leftDirection, rightDirection, upDirection, downDirection);
+
+        if (!stun){
+            snake.move(DOT_SIZE, leftDirection, rightDirection, upDirection, downDirection);
+        }
     }
 
     private void checkCollision() {
@@ -372,6 +379,7 @@ public class Board extends JPanel implements ActionListener {
             updateMeteor();
             monsterEntity.updateMonsterAndShootPositions(snake, shootSpeed);
             updateInvincibility();
+            updateStun();
         }
 
         repaint();
@@ -390,6 +398,14 @@ public class Board extends JPanel implements ActionListener {
         if (currentTime - lastMeteorTime > meteorTime) {
             meteorEntity.updatePosition(meteorSpeed); // 원하는 메테오 이동 속도
             lastMeteorTime = currentTime;
+        }
+    }
+    private void updateStun() {
+        if (stun) {
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - stun_start_time > 1000) {
+                stun = false;
+            }
         }
     }
     private void boxOpen() {
