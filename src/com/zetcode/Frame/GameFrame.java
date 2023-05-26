@@ -26,7 +26,7 @@ public class GameFrame extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setResizable(false);
 
-        InGamePannel gamePanel = new InGamePannel();
+        InGamePanel gamePanel = new InGamePanel();
         JPanel btnPanel = new JPanel();
 
         JButton endGameBtn = new JButton("End Game");
