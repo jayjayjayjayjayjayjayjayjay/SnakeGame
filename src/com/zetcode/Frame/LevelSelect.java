@@ -1,6 +1,7 @@
 package com.zetcode.Frame;
 
 import com.zetcode.Board;
+import com.zetcode.TwoPlayerBoard;
 
 import javax.swing.*;
 import java.awt.event.*;
@@ -130,6 +131,8 @@ public class LevelSelect extends JFrame implements KeyListener{
             case 1:
                 Board.setDelay(150);
                 Board.setNum(13);
+                TwoPlayerBoard.setDelay(150);
+                TwoPlayerBoard.setNum(13);
                 System.out.println(1);
                 System.out.println(Board.getDelay());
                 System.out.println(Board.getNum());
@@ -137,6 +140,8 @@ public class LevelSelect extends JFrame implements KeyListener{
             case 2:
                 Board.setDelay(125);
                 Board.setNum(15);
+                TwoPlayerBoard.setDelay(125);
+                TwoPlayerBoard.setNum(15);
                 System.out.println(2);
                 System.out.println(Board.getDelay());
                 System.out.println(Board.getNum());
@@ -144,6 +149,8 @@ public class LevelSelect extends JFrame implements KeyListener{
             case 3:
                 Board.setDelay(100);
                 Board.setNum(20);
+                TwoPlayerBoard.setDelay(100);
+                TwoPlayerBoard.setNum(20);
                 System.out.println(3);
                 System.out.println(Board.getDelay());
                 System.out.println(Board.getNum());
@@ -151,6 +158,8 @@ public class LevelSelect extends JFrame implements KeyListener{
             case 4:
                 Board.setDelay(75);
                 Board.setNum(23);
+                TwoPlayerBoard.setDelay(75);
+                TwoPlayerBoard.setNum(23);
                 System.out.println(4);
                 System.out.println(Board.getDelay());
                 System.out.println(Board.getNum());
@@ -158,6 +167,8 @@ public class LevelSelect extends JFrame implements KeyListener{
             case 5:
                 Board.setDelay(50);
                 Board.setNum(25);
+                TwoPlayerBoard.setDelay(50);
+                TwoPlayerBoard.setNum(25);
                 System.out.println(5);
                 System.out.println(Board.getDelay());
                 System.out.println(Board.getNum());
@@ -165,6 +176,8 @@ public class LevelSelect extends JFrame implements KeyListener{
             default:
                 Board.setDelay(200);
                 Board.setNum(10);
+                TwoPlayerBoard.setDelay(200);
+                TwoPlayerBoard.setNum(10);
                 System.out.println(0);
                 System.out.println(Board.getDelay());
                 System.out.println(Board.getNum());

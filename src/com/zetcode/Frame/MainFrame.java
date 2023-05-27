@@ -1,6 +1,7 @@
 package com.zetcode.Frame;
 
 import com.zetcode.Snake;
+import com.zetcode.TwoPlayerBoard;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -8,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.*;
 
 public class MainFrame extends JFrame implements KeyListener{
+    private Snake board;
     public static final int SCREEN_WIDTH=800;
     public static final int SCREEN_HEIGHT=800;
     ImageIcon img=new ImageIcon("src/resources/btn_GoToGame.jpg");
@@ -18,6 +20,8 @@ public class MainFrame extends JFrame implements KeyListener{
     ImageIcon img6=new ImageIcon("src/resources/btn_OpenMypage2.jpg");
     ImageIcon img7=new ImageIcon("src/resources/btn_CloseMain.jpg");
     ImageIcon img8=new ImageIcon("src/resources/btn_CloseMain2.jpg");
+    ImageIcon img9=new ImageIcon("src/resources/btn_2PButton.png");
+    ImageIcon img10=new ImageIcon("src/resources/btn_2PButton2.png");
     public static final String ID="admin";
 
     public MainFrame() {
@@ -57,20 +61,30 @@ public class MainFrame extends JFrame implements KeyListener{
                 openBoard();
             }
         });
+        JButton gotoTwoPlayerBoardButton = new JButton(img9);
+        gotoTwoPlayerBoardButton.setRolloverIcon(img10);
+        gotoTwoPlayerBoardButton.setBorderPainted(false);
+        gotoTwoPlayerBoardButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {open2PBoard();}
+        });
 
         setSize(800, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(null);
         gotoBoardButton.setBounds(100,100,200,100);
-        openMarketButton.setBounds(100, 200, 200, 100);
-        openMypageButton.setBounds(100, 300, 200, 100);
-        closeMainButton.setBounds(100, 400, 200, 100);
+        gotoTwoPlayerBoardButton.setBounds(100, 200, 200, 100);
+        openMarketButton.setBounds(100, 300, 200, 100);
+        openMypageButton.setBounds(100, 400, 200, 100);
+        closeMainButton.setBounds(100, 500, 200, 100);
+
 
         add(openMarketButton);
         add(openMypageButton);
         add(closeMainButton);
         add(gotoBoardButton);
+        add(gotoTwoPlayerBoardButton);
         setTitle("Main");
 
         ImageIcon background = new ImageIcon("src/resources/main_screen.png");
@@ -82,10 +96,12 @@ public class MainFrame extends JFrame implements KeyListener{
         openMypageButton.addKeyListener(this);
         closeMainButton.addKeyListener(this);
         gotoBoardButton.addKeyListener(this);
+        gotoTwoPlayerBoardButton.addKeyListener(this);
         openMarketButton.setFocusable(true);
         openMypageButton.setFocusable(true);
         closeMainButton.setFocusable(true);
         gotoBoardButton.setFocusable(true);
+        gotoTwoPlayerBoardButton.setFocusable(true);
     }
     @Override
     public void keyPressed(KeyEvent e) {
@@ -125,9 +141,15 @@ public class MainFrame extends JFrame implements KeyListener{
     }
 
     private void openBoard() {
-        Snake board = new Snake();
+        Snake board = new Snake(false);
         setVisible(false);
         board.setVisible(true);
+    }
+
+    private void open2PBoard() {
+        Snake TwoPlayerboard = new Snake(true);
+        setVisible(false);
+        TwoPlayerboard.setVisible(true);
     }
 //
 //    public static void main(String[] args) {
