@@ -37,6 +37,7 @@ public class Board extends JPanel implements ActionListener {
     private boolean inGame = true;
     private boolean gamePaused = false;
     private boolean stun = false;
+    private boolean isCoolDown = false;
     private long stun_start_time;
     private final int max_apple = 5; // 최대 생성 가능한 사과 개수
     private int current_apple = 0; // 현재 생성된 사과 개수
@@ -46,6 +47,7 @@ public class Board extends JPanel implements ActionListener {
     private int current_trap = 0; // 현재 생성된 트랩 개수
     private final int meteorTime = 1; // 원하는 메테오 시간
     private final int meteorSpeed = 5; // 원하는 메테오 시간
+    private static final int COOLDOWN_DURATION = 2000;
 
     private long lastMeteorTime;
     private MeteorEntity meteorEntity;
@@ -57,6 +59,7 @@ public class Board extends JPanel implements ActionListener {
     private boolean invincible = false;
     //변수와 무적 상태가 시작된 시간을 저장
     private long invincible_start_time;
+    private long isCoolDown_start_time;
 
     private Image invincible_head;
     private Image invincible_dot;
@@ -367,6 +370,15 @@ public class Board extends JPanel implements ActionListener {
             }
         }
     }
+    private void checkCooldown() {
+        if (isCoolDown) {
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - isCoolDown_start_time >= COOLDOWN_DURATION) {
+                isCoolDown = false;
+            }
+        }
+    }
+
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -375,6 +387,7 @@ public class Board extends JPanel implements ActionListener {
             checkBox();
             checkTrap();
             checkCollision();
+            checkCooldown();
             move();
             updateMeteor();
             monsterEntity.updateMonsterAndShootPositions(snake, shootSpeed);
@@ -483,7 +496,11 @@ public class Board extends JPanel implements ActionListener {
                 rightDirection = false;
                 leftDirection = false;
             }
-            if (key == KeyEvent.VK_SPACE) {
+            if (key == KeyEvent.VK_SPACE && !isCoolDown && snake.getDots() > 1) {
+                snake.shrink();
+                isCoolDown = true;
+                isCoolDown_start_time = System.currentTimeMillis();
+
                 invincible = true;
                 invincible_start_time = System.currentTimeMillis();
             }

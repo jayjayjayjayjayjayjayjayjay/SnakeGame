@@ -49,7 +49,7 @@ public class LoginFrame extends JFrame {
                 try {
                     String validPassword = FirebaseUtil.validateUser(id);
                     if (pw.equals(validPassword)) {
-                        openMypageFrame();
+                        openMainFrame();
                     } else {
                         JOptionPane.showMessageDialog(null, "로그인 실패");
                     }
@@ -71,10 +71,15 @@ public class LoginFrame extends JFrame {
         add(buttonPanel, BorderLayout.SOUTH);
     }
 
-    private void openMypageFrame() {
+    /*private void openMypageFrame() {
         MypageFrame mypageFrame = new MypageFrame(new MainFrame());
         setVisible(false);
         mypageFrame.setVisible(true);
+    }*/
+    private void openMainFrame() {
+        MainFrame mainFrame = new MainFrame();
+        setVisible(false);
+        mainFrame.setVisible(true);
     }
 
     private void openRegisterFrame() {
