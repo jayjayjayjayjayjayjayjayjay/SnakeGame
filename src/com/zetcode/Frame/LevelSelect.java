@@ -190,10 +190,11 @@ public class LevelSelect extends JFrame implements KeyListener{
     public void keyPressed(KeyEvent e) {
         int keyCode = e.getKeyCode();
 
-        // ->와<- 방향키로 메뉴버튼 이동
-        if (keyCode == KeyEvent.VK_LEFT) {
+        if (keyCode == KeyEvent.VK_ESCAPE) {
+            backMainFrame();
+        } else if (keyCode == KeyEvent.VK_UP) {
             this.getFocusOwner().transferFocusBackward();
-        } else if (keyCode == KeyEvent.VK_RIGHT) {
+        } else if (keyCode == KeyEvent.VK_DOWN) {
             this.getFocusOwner().transferFocus();
         }
     }
