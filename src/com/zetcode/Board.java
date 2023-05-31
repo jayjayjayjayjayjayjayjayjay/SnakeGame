@@ -424,47 +424,34 @@ public class Board extends JPanel implements ActionListener {
     private void boxOpen() {
         int option = (int) ((Math.random() * 5) + 1);
         int option_dots = (int) ((Math.random() * 2) + 1);
-        switch(option){
+        switch (option) {
             case 1:
                 locateBox();
-                if(option_dots == 1) {
-                    snake.grow();
-                }else {
-                    snake.shrink();
-                }
+                handleOption(option_dots);
                 break;
             case 2:
                 locateApples();
-                if(option_dots == 1) {
-                    snake.grow();
-                }else {
-                    snake.shrink();
-                }
+                handleOption(option_dots);
                 break;
             case 3:
                 locateTraps();
-                if(option_dots == 1) {
-                    snake.grow();
-                }else {
-                    snake.shrink();
-                }
+                handleOption(option_dots);
                 break;
             case 4:
                 incrementScore();
-                if(option_dots == 1) {
-                    snake.grow();
-                }else {
-                    snake.shrink();
-                }
+                handleOption(option_dots);
                 break;
             case 5:
                 decrementScore();
-                if(option_dots == 1) {
-                    snake.grow();
-                }else {
-                    snake.shrink();
-                }
+                handleOption(option_dots);
                 break;
+        }
+    }
+    private void handleOption(int option_dots) {
+        if (option_dots == 1) {
+            snake.grow();
+        } else {
+            snake.shrink();
         }
     }
 
